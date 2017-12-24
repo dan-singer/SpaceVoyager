@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spriter_data scml_version="1.0" generator="BrashMonkey Spriter" generator_version="r11">
+    <folder id="0">
+        <file id="0" name="rocket.png" width="5" height="5" pivot_x="0" pivot_y="1"/>
+        <file id="1" name="ship@3x.png" width="150" height="150" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="2" name="rockets@3x.png" width="12" height="121" pivot_x="0" pivot_y="1"/>
+        <file id="3" name="enemy@3x.png" width="600" height="600" pivot_x="0.5" pivot_y="0.5"/>
+    </folder>
+    <entity id="0" name="player">
+        <animation id="0" name="travel" length="600" interval="100" l="-72" t="-67" r="74" b="66">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" timeline="0" key="0" z_index="0"/>
+                    <object_ref id="1" timeline="1" key="0" z_index="1"/>
+                </key>
+                <key id="1" time="300">
+                    <object_ref id="0" timeline="0" key="1" z_index="0"/>
+                    <object_ref id="1" timeline="1" key="0" z_index="1"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="rockets@3x">
+                <key id="0" spin="0">
+                    <object folder="0" file="2" x="-72.2985" y="59.10558"/>
+                </key>
+                <key id="1" time="300" spin="0">
+                    <object folder="0" file="2" x="-69.2985" y="59.10558"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="ship@3x">
+                <key id="0" spin="0">
+                    <object folder="0" file="1"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="1" name="die" length="800" interval="100" looping="false">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" timeline="0" key="0" z_index="0"/>
+                </key>
+                <key id="1" time="301">
+                    <object_ref id="0" timeline="0" key="1" z_index="0"/>
+                </key>
+                <key id="2" time="601">
+                    <object_ref id="0" timeline="0" key="2" z_index="0"/>
+                </key>
+                <key id="3" time="800">
+                    <object_ref id="0" timeline="0" key="3" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="ship@3x">
+                <key id="0">
+                    <object folder="0" file="1"/>
+                </key>
+                <key id="1" time="301">
+                    <object folder="0" file="1" angle="40.93142" scale_x="0.560992" scale_y="0.626738"/>
+                </key>
+                <key id="2" time="601" spin="0">
+                    <object folder="0" file="1" angle="89.053049" scale_x="0.106384" scale_y="0.024735"/>
+                </key>
+                <key id="3" time="800" spin="-1">
+                    <object folder="0" file="1" angle="89.053049" scale_x="0.016704" scale_y="0.024735"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="2" name="idle" length="1" interval="100" l="-72" t="-67" r="74" b="66">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" timeline="0" key="0" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="ship@3x">
+                <key id="0" spin="0">
+                    <object folder="0" file="1"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="3" name="start-traveling" length="200" interval="100" looping="false" l="-72" t="-67" r="74" b="66">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" timeline="1" key="0" z_index="0"/>
+                    <object_ref id="1" timeline="0" key="0" z_index="1"/>
+                </key>
+                <key id="1" time="200">
+                    <object_ref id="0" timeline="1" key="1" z_index="0"/>
+                    <object_ref id="1" timeline="0" key="1" z_index="1"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="ship@3x">
+                <key id="0" spin="0">
+                    <object folder="0" file="1"/>
+                </key>
+                <key id="1" time="200" spin="0">
+                    <object folder="0" file="1"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="rockets@3x">
+                <key id="0" spin="0">
+                    <object folder="0" file="2" x="-54.298499" y="59.10558"/>
+                </key>
+                <key id="1" time="200" spin="0">
+                    <object folder="0" file="2" x="-72.2985" y="59.10558"/>
+                </key>
+            </timeline>
+        </animation>
+    </entity>
+    <entity id="1" name="Enemy">
+        <animation id="0" name="die" length="600" interval="100">
+            <mainline>
+                <key id="0" curve_type="cubic" c1="0" c2="0">
+                    <object_ref id="0" timeline="0" key="0" z_index="0"/>
+                </key>
+                <key id="1" time="598" curve_type="cubic" c1="0" c2="0">
+                    <object_ref id="0" timeline="0" key="1" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="enemy@3x">
+                <key id="0" spin="0">
+                    <object folder="0" file="3"/>
+                </key>
+                <key id="1" time="598" spin="0">
+                    <object folder="0" file="3" scale_x="0.02147" scale_y="0.032204"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="1" name="idle" length="1000" interval="100">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" timeline="0" key="0" z_index="0"/>
+                </key>
+                <key id="1" time="265">
+                    <object_ref id="0" timeline="0" key="1" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="enemy@3x">
+                <key id="0" spin="0">
+                    <object folder="0" file="3"/>
+                </key>
+                <key id="1" time="265" spin="0">
+                    <object folder="0" file="3" scale_x="0.83888" scale_y="0.894343"/>
+                </key>
+            </timeline>
+        </animation>
+    </entity>
+</spriter_data>
