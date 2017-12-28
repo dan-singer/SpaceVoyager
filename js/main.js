@@ -94,7 +94,7 @@ const gameManager = {
         this.spawnCamera();
 
         //Make a permanent mute button
-        let button = new Button("audio", ()=>{
+        let button = new Button("audio", this.app, ()=>{
             if (audBg.playing()){
                 audBg.pause();
             }
@@ -102,7 +102,7 @@ const gameManager = {
                 audBg.play();
             }
         }, 0);
-        button.position = {x:this.app.screen.width - button.width, y:this.app.screen.height-button.height};
+            button.posGetter = ()=>({x:this.app.screen.width - button.width, y:this.app.screen.height-button.height});
         this.app.stage.addChild(button);
 
         //Pause functionality
@@ -112,9 +112,9 @@ const gameManager = {
         });
 
         //Fix canvas when window is resized
-        window.onresize = (e) => {
+        window.addEventListener("resize", (e) => {
             this.app.renderer.resize(this.gameContainer.clientWidth, this.gameContainer.clientHeight);
-        };
+        });
     },
     
     /**
@@ -123,12 +123,10 @@ const gameManager = {
      */
     generateTitle(){
         let titleScene = new PIXI.Container();
-        let title = new Title("Space Voyager");
-            title.position = {x: this.app.screen.width/2 - title.width/2, y: this.app.screen.height/2 - title.height/2};
-
-
+        let title = new Title("Space Voyager", this.app);
+            title.posGetter = ()=>({x: this.app.screen.width/2 - title.width/2, y: this.app.screen.height/2 - title.height/2});
         //Here, we chain together faders to implement smooth transitions between instructions
-        let button = new Button("Start", ()=>{
+        let button = new Button("Start", this.app, ()=>{
             new Fader(titleScene, this.app).fadeTo(0).then(()=>{
                 new Fader(this.scenes.instructions.children[0], this.app).fadeTo(1).then(()=>{
                     new Fader(this.scenes.instructions.children[1], this.app).fadeTo(1).then(()=>{
@@ -148,7 +146,7 @@ const gameManager = {
                 });
             });
         });
-        button.position = {x: this.app.screen.width/2 - button.width/2, y: this.app.screen.height - button.height*2};
+            button.posGetter = ()=>({x: this.app.screen.width/2 - button.width/2, y: this.app.screen.height - button.height*2});
             
         titleScene.addChild(title);
         titleScene.addChild(button);
@@ -161,20 +159,16 @@ const gameManager = {
      */
     generateInstructions(){
         let container = new PIXI.Container();
-        let instr = new Label("WASD/Arrows to move");
-            instr.position = {x:this.app.screen.width/2-instr.width, y:this.app.screen.height/2-instr.height};    
+        let instr = new Label("WASD/Arrows to move", this.app);
+            instr.posGetter = ()=> ({x:this.app.screen.width/2-instr.width, y:this.app.screen.height/2-instr.height});
             instr.alpha = 0;
-        let instr2 = new Label("Left Click/Space to shoot");
-            instr2.position = {x:this.app.screen.width/2, y:this.app.screen.height/2};        
+        let instr2 = new Label("Left Click/Space to shoot", this.app);
+            instr2.posGetter = ()=>({x:this.app.screen.width/2, y:this.app.screen.height/2});
             instr2.alpha = 0;
-        let instr3 = new Label("Rid the world of the GL5 creatures");
-            instr3.position = {x:this.app.screen.width/2 - instr3.width/2, y:this.app.screen.height/2 - instr3.height/2};
-            instr3.alpha = 0;        
-            
-        container.addChild(instr);
-        container.addChild(instr2);
-        container.addChild(instr3);
-        
+        let instr3 = new Label("Rid the world of the GL5 creatures", this.app);
+            instr3.posGetter = ()=>({x:this.app.screen.width/2 - instr3.width/2, y:this.app.screen.height/2 - instr3.height/2});
+            instr3.alpha = 0;                    
+        container.addChild(instr, instr2, instr3);
         return container;
     },
 
@@ -186,25 +180,26 @@ const gameManager = {
 
         let winScene = new PIXI.Container();
 
-        let label = new Label("Mission Accomplished");
-        label.position = {x: this.app.screen.width/2 - label.width/2, y: 0};
+        let label = new Label("Mission Accomplished", this.app);
+            label.posGetter = ()=>({x: this.app.screen.width/2 - label.width/2, y: 0});
 
-        let button = new Button("Back to title", ()=>{
-            new Fader(winScene, this.app).fadeTo(0).then(()=>{
-                this.camera.target = null;                
-                this.scenes.win.visible = false;
-                this.scenes.title.visible = true;
-                this.score = 0;
-                new Fader(this.scenes.title, this.app).fadeTo(1);
+        let button = new Button("Back to title", 
+            this.app,
+            ()=>{
+                new Fader(winScene, this.app).fadeTo(0).then(()=>{
+                    this.camera.target = null;                
+                    this.scenes.win.visible = false;
+                    this.scenes.title.visible = true;
+                    this.score = 0;
+                    new Fader(this.scenes.title, this.app).fadeTo(1);
+                });
             });
-        });
-        button.position = {x:this.app.screen.width/2 - button.width/2, y: this.app.screen.height - button.height};        
-        
-
-        let scoreLabel = new ScoreLabel(()=>`Score: ${this.score}`, this.app);
-        let highScoreLabel = new HighScoreLabel(()=>`High Score: ${this.getHighScore()}`, this.app);
-        
-
+            button.posGetter = ()=>({x:this.app.screen.width/2 - button.width/2, y: this.app.screen.height - button.height});
+        let margin = 40; 
+        let scoreLabel = new DynamicLabel(()=>`Score: ${this.score}`,this.app);
+            scoreLabel.posGetter = ()=>({x:margin, y:margin});
+        let highScoreLabel = new DynamicLabel(()=>`High Score: ${this.getHighScore()}`, this.app);
+            highScoreLabel.posGetter = ()=>({x:this.app.screen.width-highScoreLabel.width-margin, y:margin});
         winScene.addChild(label, button, scoreLabel, highScoreLabel);
         return winScene;
     },
@@ -216,10 +211,10 @@ const gameManager = {
     generateDeath(){
         let deathScene = new PIXI.Container();
         
-        let label = new Label("Mission Failed");
-            label.position = {x: this.app.screen.width/2 - label.width/2, y: 0};
+        let label = new Label("Mission Failed", this.app);
+            label.posGetter = ()=>({x: this.app.screen.width/2 - label.width/2, y: 0});
 
-        let button = new Button("Restart", ()=>{
+        let button = new Button("Restart", this.app, ()=>{
             new Fader(deathScene, this.app).fadeTo(0).then(()=>{
                 this.camera.target = null;
                 this.scenes.main = this.generateLevel();
@@ -228,11 +223,13 @@ const gameManager = {
                 this.app.stage.addChild(this.scenes.main);
             });
         });
-        button.position = {x:this.app.screen.width/2 - button.width/2, y: this.app.screen.height - button.height};
+            button.posGetter = ()=>({x:this.app.screen.width/2 - button.width/2, y: this.app.screen.height - button.height});
         
-
-        let scoreLabel = new ScoreLabel(()=>`Score: ${this.score}`, this.app);        
-        let highScoreLabel = new HighScoreLabel(()=>`High Score: ${this.getHighScore()}`, this.app);
+        let margin = 40;  
+        let scoreLabel = new DynamicLabel(()=>`Score: ${this.score}`, this.app);
+            scoreLabel.posGetter = ()=>({x:margin, y:margin});
+        let highScoreLabel = new DynamicLabel(()=>`High Score: ${this.getHighScore()}`, this.app);
+            highScoreLabel.posGetter = ()=>({x:this.app.screen.width-highScoreLabel.width-margin, y:margin});
         
 
         deathScene.addChild(label, button, scoreLabel, highScoreLabel);
@@ -279,10 +276,10 @@ const gameManager = {
     createHUD(scene){
         let margin = 20;
         let healthHUD = new HUDLabel(()=>{return `Health: ${this.player.health}`;}, this.app, this.camera);
-            healthHUD.positionOffset = {x:margin, y:margin};
+            healthHUD.posGetter = ()=>({x:margin, y:margin});
 
         let scoreHUD = new HUDLabel(()=>{return `Score: ${this.score}`;}, this.app, this.camera);
-            scoreHUD.positionOffset = {x:this.app.screen.width-scoreHUD.width-margin*4, y:margin};
+            scoreHUD.posGetter = ()=>({x:this.app.screen.width-scoreHUD.width-margin*4, y:margin});
 
         let roomHUD = new HUDLabel( ()=> {
             for (let i=0; i<this.levelGrid.length; i++){
@@ -293,9 +290,8 @@ const gameManager = {
                 }
             }
         }, this.app, this.camera);
-
-        roomHUD.positionOffset = {x:this.app.screen.width/2 - roomHUD.width/2, y:this.app.screen.height-roomHUD.height-margin};
-        scene.addChild(healthHUD); scene.addChild(scoreHUD); scene.addChild(roomHUD);
+            roomHUD.posGetter = ()=>({x:this.app.screen.width/2 - roomHUD.width/2, y:this.app.screen.height-roomHUD.height-margin});
+        scene.addChild(healthHUD, scoreHUD, roomHUD);
     },
 
     /**
@@ -361,8 +357,8 @@ const gameManager = {
      */
     createPauseMenu(scene){
         this.scenes.paused = new PIXI.Container();
-        let pLabel = new HUDLabel(()=>"-Paused-", this.app, this.camera);
-        pLabel.positionOffset = {x:this.app.screen.width/2-pLabel.width/2, y:this.app.screen.height/2 - pLabel.height/2};
+        let pLabel = new HUDLabel(()=>"-Paused-",  this.app, this.camera);
+            pLabel.posGetter = ()=>({x:this.app.screen.width/2-pLabel.width/2, y:this.app.screen.height/2 - pLabel.height/2});
         this.scenes.paused.addChild(pLabel);
         this.scenes.paused.visible = false;
         scene.addChild(this.scenes.paused);

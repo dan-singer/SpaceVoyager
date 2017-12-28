@@ -3,13 +3,24 @@
  * @author Dan Singer 
  */
 class Label extends PIXI.Text{
-    constructor(text){
+    constructor(text, app){
         let style = new PIXI.TextStyle({
             fontFamily: "Verdana",
             fontSize: 36,
             fill: 0xFFFFFF
         });
         super(text, style);
+        app.ticker.add(()=>this.update());
+    }
+
+    set posGetter(pos){
+        this.posGetterFunc = pos;
+        this.position = this.posGetterFunc();
+    }
+
+    update(){
+        if (this.posGetterFunc)
+            this.position = this.posGetterFunc();
     }
 }
 
@@ -19,41 +30,15 @@ class Label extends PIXI.Text{
  */
 class DynamicLabel extends Label{
     constructor(textGetter, app){
-        super(textGetter());        
+        super(textGetter(), app);        
         this.style.fontSize = 24;
         this.textGetter = textGetter;
-        this.app = app;        
-        this.app.ticker.add(()=>this.update());
     }
     update(){
+        super.update();
         this.text = this.textGetter();
     }
 }
-
-/**
- * Score Label
- * @author Dan Singer
- */
-class ScoreLabel extends DynamicLabel{
-    constructor(textGetter, app){
-        super(textGetter, app);
-        this.style.fontSize = 48;
-        this.position = {x:this.app.screen.width/2 - this.width/2, y:this.app.screen.height/2-this.height/2};
-    }
-}
-
-/**
- * High Score Label
- * @author Dan Singer 
- */
-class HighScoreLabel extends DynamicLabel{
-    constructor(textGetter, app){
-        super(textGetter, app);
-        let margin = 40;
-        this.position = {x:this.app.screen.width - this.width - margin, y:margin};
-    }
-}
-
 
 /**
  * Label that matches camera's position
@@ -63,12 +48,12 @@ class HUDLabel extends DynamicLabel{
     constructor(textGetter, app, camera){
         super(textGetter, app);        
         this.camera = camera;
-        this.positionOffset = {x:0, y:0};
     }
 
     update(){
         super.update();
-        this.position = {x:this.camera.position.x+this.positionOffset.x, y:this.camera.position.y+this.positionOffset.y};
+        let offset = this.posGetterFunc();
+        this.position = {x:this.camera.position.x+offset.x, y:this.camera.position.y+offset.y};
     }
 }
 
@@ -76,14 +61,15 @@ class HUDLabel extends DynamicLabel{
  * Title class
  * @author Dan Singer 
  */
-class Title extends PIXI.Text{
-    constructor(text){
+class Title extends Label{
+    constructor(text, app){
         let style = new PIXI.TextStyle({
             fontFamily: "Saira",
             fontSize: 72,
             fill: 0xFFFFFF
         });
-        super(text, style);
+        super(text, app);
+        this.style = style;
     }
 }
 
@@ -91,20 +77,21 @@ class Title extends PIXI.Text{
  * Button class which abstracts boilerplate PIXI button code
  * @author Dan Singer
  */
-class Button extends PIXI.Text{
+class Button extends Label{
     /**
      * Construct a new button
      * @param {String} text 
      * @param {Function} pressFunc function called when pressed
      * @param {Number} disableTime how long in milliseconds this button will not perform pressFunc after pressed.
      */
-    constructor(text, pressFunc, disableTime=1000){
+    constructor(text, app, pressFunc, disableTime=1000){
         let style = new PIXI.TextStyle({
             fontFamily: "Verdana",
             fontSize: 32,
             fill: 0x747272
         });
-        super(text, style);
+        super(text, app);
+        this.style = style;
         this.interactive = true;
         this.buttonMode = true;
         this.pressFunc = pressFunc;
