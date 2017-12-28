@@ -75,6 +75,9 @@ const gameManager = {
         this.app.ticker.add(()=>{CollisionManager.update()});
 
 
+        //Hide the loading window
+        document.querySelector(".loader-wrapper").style.opacity = 0;
+
         //Make all scenes except for the main one
         this.scenes.title = this.generateTitle();
         this.scenes.instructions = this.generateInstructions();
@@ -191,6 +194,7 @@ const gameManager = {
                 this.camera.target = null;                
                 this.scenes.win.visible = false;
                 this.scenes.title.visible = true;
+                this.score = 0;
                 new Fader(this.scenes.title, this.app).fadeTo(1);
             });
         });
@@ -220,6 +224,7 @@ const gameManager = {
                 this.camera.target = null;
                 this.scenes.main = this.generateLevel();
                 this.scenes.death.visible = false;
+                this.score = 0;
                 this.app.stage.addChild(this.scenes.main);
             });
         });
@@ -537,7 +542,7 @@ class Fader{
 
 //Load bg audio first
 let audBg = new Howl({
-    src: ["media/audio/bg.wav"],
+    src: ["media/audio/bg.ogg"],
     loop: true
 }).once("load", ()=>{
     audBg.play();
