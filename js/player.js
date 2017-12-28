@@ -41,7 +41,6 @@ class Player extends GameObject{
             animDie.loop = false;
             animDie.onComplete = () => { 
                 gameManager.playerDied();
-                this.destroy();
             }
             
         

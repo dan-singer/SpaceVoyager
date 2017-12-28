@@ -16,7 +16,8 @@ class Camera{
      * @param {Vector2} newPos
      */
     set position(newPos){
-        this.container.position = Vector2.scale(newPos, -1);
+        if (this.container)
+            this.container.position = Vector2.scale(newPos, -1);
     }
 
     /**
@@ -24,7 +25,10 @@ class Camera{
      * @return {Vector2}
      */
     get position(){
-        return Vector2.scale(this.container.position, -1);
+        if (this.container)
+            return Vector2.scale(this.container.position, -1);
+        else
+            return new Vector2(0,0);
     }
 
     /**
@@ -79,9 +83,6 @@ class FollowCam extends Camera{
             let dt = 1 / this.app.ticker.FPS;
             let desiredPosition = new Vector2(this.target.x - this.app.screen.width/2, this.target.y - this.app.screen.height/2 );
             this.position = Vector2.lerp(this.position, desiredPosition, this.speed * dt);
-        }
-        else{
-            this.position = new Vector2(0,0);
         }
     }
 

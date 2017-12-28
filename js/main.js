@@ -43,7 +43,6 @@ const gameManager = {
      * Called when window has loaded.
      */
     windowLoaded(){
-        
         this.gameContainer = document.querySelector("#game");
         this.app = new PIXI.Application({width:this.gameContainer.clientWidth, height:this.gameContainer.clientHeight});
         this.gameContainer.appendChild(this.app.view);
@@ -187,7 +186,6 @@ const gameManager = {
             this.app,
             ()=>{
                 new Fader(winScene, this.app).fadeTo(0).then(()=>{
-                    this.camera.target = null;                
                     this.scenes.win.visible = false;
                     this.scenes.title.visible = true;
                     this.score = 0;
@@ -216,11 +214,12 @@ const gameManager = {
 
         let button = new Button("Restart", this.app, ()=>{
             new Fader(deathScene, this.app).fadeTo(0).then(()=>{
-                this.camera.target = null;
                 this.scenes.main = this.generateLevel();
                 this.scenes.death.visible = false;
                 this.score = 0;
                 this.app.stage.addChild(this.scenes.main);
+                this.scenes.main.alpha = 0;
+                new Fader(this.scenes.main, this.app).fadeTo(1);
             });
         });
             button.posGetter = ()=>({x:this.app.screen.width/2 - button.width/2, y: this.app.screen.height - button.height});
@@ -383,11 +382,15 @@ const gameManager = {
      * Called when the game was won
      */
     gameWon(){
-        this.app.stage.removeChild(this.scenes.main);
-        this.scenes.win.visible = true;
-        this.scenes.win.alpha = 1;
-        let dummy = new GameObject("dummy", this.app, {x: this.app.screen.width/2, y:this.app.screen.height/2});
-        this.camera.target = dummy;
+        this.camera.container = null;
+        this.camera.target = null;
+        new Fader(this.scenes.main, this.app).fadeTo(0).then(()=>{
+            this.app.stage.removeChild(this.scenes.main);
+            this.scenes.main.destroy({children:true});
+            this.scenes.win.visible = true;
+            this.scenes.win.alpha = 0;
+            new Fader(this.scenes.win, this.app).fadeTo(1);
+        });
         //update high score
         if (this.score > this.getHighScore()){
             this.setHighScore(this.score);
@@ -398,12 +401,15 @@ const gameManager = {
      * Called when the player died
      */
     playerDied(){
-        this.app.stage.removeChild(this.scenes.main);
-        this.scenes.death.visible = true;
-        this.scenes.death.alpha = 1;
-        let dummy = new GameObject("dummy", this.app, {x: this.app.screen.width/2, y:this.app.screen.height/2});
-        this.camera.target = dummy;
-
+        this.camera.container = null;
+        this.camera.target = null;
+        new Fader(this.scenes.main, this.app).fadeTo(0).then(()=>{
+            this.app.stage.removeChild(this.scenes.main);
+            this.scenes.main.destroy({children:true});
+            this.scenes.death.visible = true;
+            this.scenes.death.alpha = 0;
+            new Fader(this.scenes.death, this.app).fadeTo(1);
+        });
         //update high score
         if (this.score > this.getHighScore()){
             this.setHighScore(this.score);
@@ -553,5 +559,4 @@ let audBg = new Howl({
         }
     });
 });
-
 

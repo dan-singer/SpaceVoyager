@@ -190,12 +190,15 @@ class GameObject extends PIXI.Container{
     /**
      * Unregister the collider if it exists, stop updating, and remove from the parent container
      */
-    destroy(){
+    destroy(options){
         if (this.collider){
             CollisionManager.unregister(this.collider);
         }
-        this.app.ticker.remove(this.updateRef);        
-        this.parent.removeChild(this);
+        this.app.ticker.remove(this.updateRef);
+        if (this.motor){
+            this.app.ticker.remove(this.motor.updateRef);
+        }
+        super.destroy(options);
     }
 
     /**
@@ -231,7 +234,8 @@ class Motor{
         this.velocity = new Vector2(0,0);
         this.acceleration = new Vector2(0,0);
         this.mass = 1;
-        this.gameObject.app.ticker.add(()=>this.update());
+        this.updateRef = ()=>this.update(); 
+        this.gameObject.app.ticker.add(this.updateRef);
     }
 
     /**

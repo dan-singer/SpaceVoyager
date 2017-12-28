@@ -10,7 +10,9 @@ class Label extends PIXI.Text{
             fill: 0xFFFFFF
         });
         super(text, style);
-        app.ticker.add(()=>this.update());
+        this.updateRef = ()=>this.update();
+        this.app = app;
+        this.app.ticker.add(this.updateRef);
     }
 
     set posGetter(pos){
@@ -21,6 +23,11 @@ class Label extends PIXI.Text{
     update(){
         if (this.posGetterFunc)
             this.position = this.posGetterFunc();
+    }
+
+    destroy(options){
+        this.app.ticker.remove(this.updateRef);
+        super.destroy(options);
     }
 }
 
