@@ -39,6 +39,17 @@ const gameManager = {
     gameContainer: null,
     paused: false,
     keyPrefix: "djs5435-",
+    loadItemQuerySelector: "#load-item",
+    loadItem: null,
+    /**
+     * Set the load item
+     * @param {String} item 
+     */
+    setLoadItem(item){
+        if (!this.loadItem)
+            this.loadItem = document.querySelector(this.loadItemQuerySelector);
+        this.loadItem.textContent = item;
+    },
     /**
      * Called when window has loaded.
      */
@@ -59,6 +70,8 @@ const gameManager = {
             }
         }
 
+        this.setLoadItem("graphics");
+
         PIXI.loader
             .add("media/sprites.json")
             .load(()=>{
@@ -72,6 +85,8 @@ const gameManager = {
     assetsLoaded(){
         this.textures = PIXI.loader.resources["media/sprites.json"].textures;
         this.app.ticker.add(()=>{CollisionManager.update()});
+
+        this.setLoadItem("complete");
 
 
         //Hide the loading window
@@ -456,6 +471,7 @@ const gameManager = {
         }
     }
 
+
 };
 
 /**
@@ -542,21 +558,28 @@ class Fader{
     }
 }
 
-//Load bg audio first
-let audBg = new Howl({
-    src: ["media/audio/bg.ogg"],
-    loop: true
-}).once("load", ()=>{
-    audBg.play();
-    //Wait for custom font to be loaded before making the canvas
-    WebFont.load({
-        google: {
-            families: ['Saira']
-        },
-        //Use arrow function so proper this will be used
-        active:e=>{
-            gameManager.windowLoaded();
-        }
+
+window.onload = e=>
+{
+    gameManager.setLoadItem("audio");
+    //Load bg audio first
+    let audBg = new Howl({
+        src: ["media/audio/bg.ogg"],
+        loop: true
+    }).once("load", ()=>{
+        gameManager.setLoadItem("fonts");
+        audBg.play();
+        //Wait for custom font to be loaded before making the canvas
+        WebFont.load({
+            google: {
+                families: ['Saira']
+            },
+            //Use arrow function so proper this will be used
+            active:e=>{
+                gameManager.windowLoaded();
+            }
+        });
     });
-});
+}
+
 
